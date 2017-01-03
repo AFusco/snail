@@ -36,7 +36,7 @@ class MainSP(StreamProcessor):
 			log.warning('No operations chained. Echoing input.')
 			return output_stream
 
-		for mp in self.chain:
-			output_stream = mp.process(output_stream)
+		for sp in self.chain:
+			output_stream = sp.process(output_stream)
 
 		return output_stream
