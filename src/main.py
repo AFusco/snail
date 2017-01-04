@@ -9,7 +9,9 @@ import sys
 
 from StreamProcessors.MainSP import *
 from StreamProcessors.KeyChangerSP import *
+from StreamProcessors.LadyCanazzaSP import *
 
+from cache.MidiLoader import *
 
 import music21 as m
 	
@@ -53,15 +55,20 @@ def main():
 
 	s = m.stream.Stream()
 
-	mf = m.midi.MidiFile()
-	mf.open(args.input_file.name)
-	mf.read()
-	mf.close()
-	s = m.midi.translate.midiFileToStream(mf)
+	loader = MidiLoader()
 
-	output = MainSP().then(KeyChangerSP(10)).process(s)
-	m.graph.plotStream(output)
-	m.graph.plotStream(s)
+	s = loader.load(os.path.abspath(args.input_file.name))
+
+
+	# output = MainSP().then(LadyCanazzaSP(10)).then(KeyChangerSP(10)).process(s)
+	log.debug('Guarda di che tipo è s: ')
+	log.debug(s)
+	output = MainSP().then(LadyCanazzaSP(delta=20)).process(s)
+
+	mf = m.midi.translate.streamToMidiFile(output)
+	mf.open('../midi/out.mid', 'wb')
+	mf.write()
+	mf.close()  
 
 
 
